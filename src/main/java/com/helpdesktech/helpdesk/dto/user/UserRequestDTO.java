@@ -21,7 +21,6 @@ public record UserRequestDTO(
         @Size(min = 8, message = "Password must be at least 8 characters")
         String password,
 
-
         @Pattern(
                 regexp = "^(?:\\+212|212|0)([67])\\d{8}$",
                 message = "Phone number must be a valid Moroccan mobile number"
@@ -33,7 +32,6 @@ public record UserRequestDTO(
         String department,
 
         UserRole role,
-
         UserStatus status
 ) {
 }

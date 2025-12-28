@@ -1,4 +1,10 @@
 package com.helpdesktech.helpdesk.dto.ticket;
 
-public record UpdateTicketDTO() {
+import com.helpdesktech.helpdesk.enums.Ticket.TicketPriority;
+import com.helpdesktech.helpdesk.enums.Ticket.TicketStatus;
+
+public record UpdateTicketDTO(
+        TicketStatus status,
+        TicketPriority priority
+) {
 }

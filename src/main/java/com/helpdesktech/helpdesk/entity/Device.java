@@ -1,11 +1,13 @@
 package com.helpdesktech.helpdesk.entity;
 
-
 import com.helpdesktech.helpdesk.enums.Device.DeviceStatus;
 import com.helpdesktech.helpdesk.enums.Device.DeviceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

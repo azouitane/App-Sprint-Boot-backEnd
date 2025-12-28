@@ -9,7 +9,7 @@ public record UpdateUserDTO(
         @Size(max = 100)
         String fullName,
 
-        @NotBlank
+        @NotBlank(message = "Password is required")
         @Size(min = 6)
         String password,
 
