@@ -13,6 +13,7 @@ import com.helpdesktech.helpdesk.repository.UserRepository;
 import com.helpdesktech.helpdesk.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     private String normalizePhone(String phone) {
         if (phone.startsWith("0")) return "+212" + phone.substring(1);
@@ -34,20 +36,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUserOne(UserRequestDTO userRequestDTO) {
+
+        String normalizedPhone = normalizePhone(userRequestDTO.phoneNumber());
+
         if (userRepository.findByEmail(userRequestDTO.email()).isPresent())
             throw new DuplicateResourceException("Email already exists");
-        if (userRepository.findByPhoneNumber(userRequestDTO.phoneNumber()).isPresent())
+
+        if (userRepository.findByPhoneNumber(normalizedPhone).isPresent())
             throw new DuplicateResourceException("Phone number already exists");
+
         if (userRepository.findByFullName(userRequestDTO.fullName()).isPresent())
             throw new DuplicateResourceException("Full name already exists");
 
         User user = userMapper.toEntity(userRequestDTO);
-        user.setPhoneNumber(normalizePhone(userRequestDTO.phoneNumber()));
+
+        user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
+        user.setPhoneNumber(normalizedPhone);
         user.setRole(UserRole.USER);
         user.setStatus(UserStatus.ACTIVE);
 
         return userMapper.toDto(userRepository.save(user));
     }
+
 
     @Override
     public List<UserResponseDTO> getAllUsers() {
@@ -61,7 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
         return userMapper.toDto(user);
     }
 
@@ -70,12 +80,38 @@ public class UserServiceImpl implements UserService {
         User userUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
 
-        if (updateUserDTO.fullName() != null) userUpdate.setFullName(updateUserDTO.fullName());
-        if (updateUserDTO.password() != null) userUpdate.setPassword(updateUserDTO.password());
-        if (updateUserDTO.phoneNumber() != null) userUpdate.setPhoneNumber(normalizePhone(updateUserDTO.phoneNumber()));
-        if (updateUserDTO.department() != null) userUpdate.setDepartment(updateUserDTO.department());
+        // Full name
+        if (updateUserDTO.fullName() != null) {
+            // Check duplicate full name for other users
+            userRepository.findByFullName(updateUserDTO.fullName())
+                    .filter(u -> !u.getId().equals(id))
+                    .ifPresent(u -> { throw new DuplicateResourceException("Full name already exists"); });
+            userUpdate.setFullName(updateUserDTO.fullName());
+        }
+
+        // Password
+        if (updateUserDTO.password() != null) {
+            userUpdate.setPassword(passwordEncoder.encode(updateUserDTO.password()));
+        }
+
+        // Phone number
+        if (updateUserDTO.phoneNumber() != null) {
+            String normalizedPhone = normalizePhone(updateUserDTO.phoneNumber());
+
+            // Check duplicate phone for other users
+            userRepository.findByPhoneNumber(normalizedPhone)
+                    .filter(u -> !u.getId().equals(id))
+                    .ifPresent(u -> { throw new DuplicateResourceException("Phone number already exists"); });
+
+            userUpdate.setPhoneNumber(normalizedPhone);
+        }
+        // Department
+        if (updateUserDTO.department() != null) {
+            userUpdate.setDepartment(updateUserDTO.department());
+        }
 
         return userMapper.toDto(userRepository.save(userUpdate));
     }
+
 
 }

@@ -18,7 +18,7 @@ import java.util.UUID;
 public class DeviceController {
     private final DeviceService deviceService;
 
-    // Create Device
+    // Create Devicebvgvnhhhhbhhbhhghbbgghghbhb
     @PostMapping
     public ResponseEntity<DeviceResponseDTO> createDevice(@Valid @RequestBody DeviceRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)

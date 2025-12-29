@@ -32,6 +32,7 @@ public record UserRequestDTO(
         String department,
 
         UserRole role,
+
         UserStatus status
 ) {
 }

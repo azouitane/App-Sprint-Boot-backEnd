@@ -1,26 +1,24 @@
 package com.helpdesktech.helpdesk.controller;
-
-import com.helpdesktech.helpdesk.dto.auth.LoginDTO;
+import com.helpdesktech.helpdesk.dto.auth.LoginRequestDTO;
+import com.helpdesktech.helpdesk.dto.auth.LoginResponseDTO;
+import com.helpdesktech.helpdesk.service.AuthService;
 import com.helpdesktech.helpdesk.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.module.ModuleDescriptor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+        String token = authService.authenticate(request);
 
-    @PutMapping
-    public String login(@Valid @RequestBody LoginDTO loginDTO) {
-        return "Login successful";
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 }

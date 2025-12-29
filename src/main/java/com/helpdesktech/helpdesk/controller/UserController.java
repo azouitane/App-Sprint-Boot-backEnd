@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
@@ -20,27 +21,30 @@ public class UserController {
 
     private final UserService userService;
 
-    // Create User One Controller
+    // Create User One Controller by Admin
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUserOne(userRequestDTO));
     }
 
-    // Get All Users Controller
+    // Get All Users Controller by Admin et Technician
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping
     public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    // Get User By id Controller
+    // Get User By id Controller by Admin et Technician
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping("/{id}")
     public UserResponseDTO getUserById(@PathVariable UUID id) {
         return userService.getUserById(id);
     }
 
-    // Update User
-
+    // Update User by Admin et Technician
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable UUID id,
