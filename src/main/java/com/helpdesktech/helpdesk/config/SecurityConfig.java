@@ -38,6 +38,10 @@ public class SecurityConfig {
                         // Devices endpoints
                         .requestMatchers("/api/devices/**").hasAnyRole("ADMIN", "TECHNICIAN")
 
+                        // Tickets endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/tickets/**").hasAnyRole("ADMIN","TECHNICIAN","USER")
+                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "TECHNICIAN")
+
                         // Any other request
                         .anyRequest().authenticated()
                 )
