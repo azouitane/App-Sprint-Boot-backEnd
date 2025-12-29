@@ -1,5 +1,6 @@
 package com.helpdesktech.helpdesk.service.impl;
 
+import com.helpdesktech.helpdesk.config.SecurityConfig;
 import com.helpdesktech.helpdesk.dto.ticket.TicketRequestDTO;
 import com.helpdesktech.helpdesk.dto.ticket.TicketResponseDTO;
 import com.helpdesktech.helpdesk.dto.ticket.UpdateTicketDTO;
@@ -15,8 +16,9 @@ import com.helpdesktech.helpdesk.repository.TicketRepository;
 import com.helpdesktech.helpdesk.repository.UserRepository;
 import com.helpdesktech.helpdesk.service.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,9 +34,12 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketResponseDTO createTicket(TicketRequestDTO ticketRequestDTO) {
-        User requester = userRepository.findById(ticketRequestDTO.requesterId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "User not found: " + ticketRequestDTO.requesterId()));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        UUID userId = UUID.fromString(auth.getName());
+
+        User requester = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
         Device device = null;
         if (ticketRequestDTO.deviceId() != null) {
@@ -50,7 +55,6 @@ public class TicketServiceImpl implements TicketService {
 
         return ticketMapper.toDto(ticketRepository.save(ticket));
     }
-
 
     @Override
     public TicketResponseDTO getTicketById(UUID id) {
