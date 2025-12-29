@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class DeviceController {
     private final DeviceService deviceService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     // Create Devicebvgvnhhhhbhhbhhghbbgghghbhb
     @PostMapping
     public ResponseEntity<DeviceResponseDTO> createDevice(@Valid @RequestBody DeviceRequestDTO dto) {
@@ -25,6 +27,7 @@ public class DeviceController {
                 .body(deviceService.createDevice(dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     // Get all Devices
     @GetMapping
     public ResponseEntity<List<DeviceResponseDTO>> getAllDevices() {
@@ -32,12 +35,14 @@ public class DeviceController {
     }
 
     // Get Device by ID
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping("/{id}")
     public ResponseEntity<DeviceResponseDTO> getDeviceById(@PathVariable UUID id) {
         return ResponseEntity.ok(deviceService.getDeviceById(id));
     }
 
     // Update Device
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @PutMapping("/{id}")
     public ResponseEntity<DeviceResponseDTO> updateDevice(
             @PathVariable UUID id,
@@ -45,6 +50,7 @@ public class DeviceController {
         return ResponseEntity.ok(deviceService.updateDevice(id, dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     // Delete Device
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDevice(@PathVariable UUID id) {

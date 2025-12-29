@@ -6,6 +6,7 @@ import com.helpdesktech.helpdesk.exception.Device.DeviceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -46,7 +47,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -60,25 +61,38 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler({DeviceNotFoundException.class, DeviceDuplicateException.class})
-    public ResponseEntity<ErrorResponseDTO> handleDeviceExceptions(
-            RuntimeException ex,
+    @ExceptionHandler(DeviceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDeviceNotFound(
+            DeviceNotFoundException ex,
             HttpServletRequest request
     ) {
-        HttpStatus status = ex instanceof DeviceNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
-                status.value(),
-                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
-        return ResponseEntity.status(status).body(error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(DeviceDuplicateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDeviceDuplicate(
+            DeviceDuplicateException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                Map.of("message", ex.getMessage()),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     /* ================== Auth / Security ================== */
@@ -91,7 +105,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.UNAUTHORIZED.value(),
-                ex.getMessage(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
@@ -102,7 +116,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.FORBIDDEN.value(),
-                "Access denied",
+                Map.of("message", "Access denied"),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
@@ -113,7 +127,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.UNAUTHORIZED.value(),
-                "Authentication required",
+                Map.of("message", "Authentication required"),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
@@ -126,16 +140,18 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        String errorMessage = ex.getBindingResult()
+        Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(f -> f.getField() + ": " + f.getDefaultMessage())
-                .collect(Collectors.joining("; "));
+                .collect(Collectors.toMap(
+                        fieldError -> fieldError.getField(),
+                        fieldError -> fieldError.getDefaultMessage()
+                ));
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                errorMessage,
+                errors,
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -149,7 +165,21 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                "Invalid parameter type: " + ex.getName(),
+                Map.of("message", "Invalid parameter type: " + ex.getName()),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRequestBodyMissing(
+            HttpMessageNotReadableException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                Map.of("message", "Request body is missing or invalid"),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -165,7 +195,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
-                "Route not found",
+                Map.of("message", "Route not found"),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -181,7 +211,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(),
+                Map.of("message", ex.getMessage()),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);

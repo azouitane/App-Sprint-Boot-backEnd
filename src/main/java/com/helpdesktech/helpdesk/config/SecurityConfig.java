@@ -1,7 +1,6 @@
 package com.helpdesktech.helpdesk.config;
-import com.helpdesktech.helpdesk.enums.User.UserRole;
 import com.helpdesktech.helpdesk.security.JwtAuthenticationFilter;
-import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,27 +26,36 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/users/**")
-                        .hasRole("ADMIN")
+                        // Users endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "TECHNICIAN")
 
-                        // ADMIN + TECHNICIAN
-                        .requestMatchers(HttpMethod.GET, "/api/users/**")
-                        .hasAnyRole("ADMIN", "TECHNICIAN")
+                        // Devices endpoints
+                        .requestMatchers("/api/devices/**").hasAnyRole("ADMIN", "TECHNICIAN")
 
-                        .requestMatchers(HttpMethod.PUT, "/api/users/**")
-                        .hasAnyRole("ADMIN", "TECHNICIAN")
-
+                        // Any other request
                         .anyRequest().authenticated()
                 )
-
-                .sessionManagement(sess ->
-                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                // Custom JSON responses for auth errors
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("{\"error\": \"Access denied\"}");
+                        })
                 );
 
+        // JWT filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -59,9 +67,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }
-

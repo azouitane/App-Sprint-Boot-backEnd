@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN','USER')")
     // Create ticket
     @PostMapping
     public ResponseEntity<TicketResponseDTO> createTicket(@Valid @RequestBody TicketRequestDTO ticketRequestDTO) {
@@ -31,12 +32,14 @@ public class TicketController {
 
 
     // Get all tickets
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping
     public List<TicketResponseDTO> getAllTickets() {
         return ticketService.getAllTickets();
     }
 
     // Get ticket by ID
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable UUID id) {
         TicketResponseDTO response = ticketService.getTicketById(id);
@@ -44,6 +47,7 @@ public class TicketController {
     }
 
     // Update ticket
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @PutMapping("/{id}")
     public ResponseEntity<TicketResponseDTO> updateTicket(
             @PathVariable UUID id,
