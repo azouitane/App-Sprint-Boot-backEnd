@@ -1,6 +1,6 @@
 package com.helpdesktech.helpdesk.service.impl;
 
-import com.helpdesktech.helpdesk.config.SecurityConfig;
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.dto.ticket.TicketRequestDTO;
 import com.helpdesktech.helpdesk.dto.ticket.TicketResponseDTO;
 import com.helpdesktech.helpdesk.dto.ticket.UpdateTicketDTO;
@@ -8,13 +8,12 @@ import com.helpdesktech.helpdesk.entity.Device;
 import com.helpdesktech.helpdesk.entity.Ticket;
 import com.helpdesktech.helpdesk.entity.User;
 import com.helpdesktech.helpdesk.enums.Ticket.TicketStatus;
-import com.helpdesktech.helpdesk.exception.Device.DeviceNotFoundException;
 import com.helpdesktech.helpdesk.exception.ResourceNotFoundException;
 import com.helpdesktech.helpdesk.mapper.TicketMapper;
 import com.helpdesktech.helpdesk.repository.DeviceRepository;
 import com.helpdesktech.helpdesk.repository.TicketRepository;
 import com.helpdesktech.helpdesk.repository.UserRepository;
-import com.helpdesktech.helpdesk.service.TicketService;
+import com.helpdesktech.helpdesk.service.interfaces.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +32,7 @@ public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
 
     @Override
-    public TicketResponseDTO createTicket(TicketRequestDTO ticketRequestDTO) {
+    public GlopalResponse createTicket(TicketRequestDTO ticketRequestDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         UUID userId = UUID.fromString(auth.getName());
@@ -53,7 +52,9 @@ public class TicketServiceImpl implements TicketService {
         ticket.setRequester(requester);
         ticket.setDevice(device);
 
-        return ticketMapper.toDto(ticketRepository.save(ticket));
+        ticketMapper.toDto(ticketRepository.save(ticket));
+
+        return new GlopalResponse("Ticket created successfully");
     }
 
     @Override
@@ -71,11 +72,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResponseDTO updateTicket(UUID id, UpdateTicketDTO updateTicketDTO) {
+    public GlopalResponse  updateTicket(UUID id, UpdateTicketDTO updateTicketDTO) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found: " + id));
         if (updateTicketDTO.status() != null) ticket.setStatus(updateTicketDTO.status());
         if (updateTicketDTO.priority() != null) ticket.setPriority(updateTicketDTO.priority());
-        return ticketMapper.toDto(ticketRepository.save(ticket));
+        ticketMapper.toDto(ticketRepository.save(ticket));
+
+        return new  GlopalResponse("Ticket updated successfully");
     }
 }

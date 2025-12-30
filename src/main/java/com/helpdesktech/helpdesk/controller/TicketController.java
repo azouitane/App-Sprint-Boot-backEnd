@@ -1,10 +1,11 @@
 package com.helpdesktech.helpdesk.controller;
 
 
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.dto.ticket.TicketRequestDTO;
 import com.helpdesktech.helpdesk.dto.ticket.TicketResponseDTO;
 import com.helpdesktech.helpdesk.dto.ticket.UpdateTicketDTO;
-import com.helpdesktech.helpdesk.service.TicketService;
+import com.helpdesktech.helpdesk.service.interfaces.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,8 @@ public class TicketController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN','USER')")
     // Create ticket
     @PostMapping
-    public ResponseEntity<TicketResponseDTO> createTicket(@Valid @RequestBody TicketRequestDTO ticketRequestDTO) {
-        TicketResponseDTO response = ticketService.createTicket(ticketRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<GlopalResponse> createTicket(@Valid @RequestBody TicketRequestDTO ticketRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.createTicket(ticketRequestDTO));
     }
 
 
@@ -42,17 +42,15 @@ public class TicketController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable UUID id) {
-        TicketResponseDTO response = ticketService.getTicketById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ticketService.getTicketById(id));
     }
 
     // Update ticket
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @PutMapping("/{id}")
-    public ResponseEntity<TicketResponseDTO> updateTicket(
+    public ResponseEntity<GlopalResponse> updateTicket(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTicketDTO updateTicketDTO) {
-        TicketResponseDTO response = ticketService.updateTicket(id, updateTicketDTO);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ticketService.updateTicket(id, updateTicketDTO));
     }
 }

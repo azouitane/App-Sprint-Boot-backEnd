@@ -1,5 +1,6 @@
 package com.helpdesktech.helpdesk.service.impl;
 
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.dto.user.UpdateUserDTO;
 import com.helpdesktech.helpdesk.dto.user.UserRequestDTO;
 import com.helpdesktech.helpdesk.dto.user.UserResponseDTO;
@@ -10,9 +11,8 @@ import com.helpdesktech.helpdesk.exception.DuplicateResourceException;
 import com.helpdesktech.helpdesk.exception.ResourceNotFoundException;
 import com.helpdesktech.helpdesk.mapper.UserMapper;
 import com.helpdesktech.helpdesk.repository.UserRepository;
-import com.helpdesktech.helpdesk.service.UserService;
+import com.helpdesktech.helpdesk.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO createUserOne(UserRequestDTO userRequestDTO) {
+    public GlopalResponse createUserOne(UserRequestDTO userRequestDTO) {
 
         String normalizedPhone = normalizePhone(userRequestDTO.phoneNumber());
 
@@ -55,7 +55,9 @@ public class UserServiceImpl implements UserService {
         user.setRole(UserRole.USER);
         user.setStatus(UserStatus.ACTIVE);
 
-        return userMapper.toDto(userRepository.save(user));
+        userMapper.toDto(userRepository.save(user));
+
+        return new GlopalResponse("User created successfully");
     }
 
 
@@ -76,7 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO updateUser(UUID id, UpdateUserDTO updateUserDTO) {
+    public GlopalResponse updateUser(UUID id, UpdateUserDTO updateUserDTO) {
         User userUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
 
@@ -110,7 +112,9 @@ public class UserServiceImpl implements UserService {
             userUpdate.setDepartment(updateUserDTO.department());
         }
 
-        return userMapper.toDto(userRepository.save(userUpdate));
+        userMapper.toDto(userRepository.save(userUpdate));
+
+        return new GlopalResponse("Update user successfully");
     }
 
 

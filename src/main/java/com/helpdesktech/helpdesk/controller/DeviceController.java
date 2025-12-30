@@ -2,7 +2,8 @@ package com.helpdesktech.helpdesk.controller;
 
 import com.helpdesktech.helpdesk.dto.device.DeviceRequestDTO;
 import com.helpdesktech.helpdesk.dto.device.DeviceResponseDTO;
-import com.helpdesktech.helpdesk.service.DeviceService;
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
+import com.helpdesktech.helpdesk.service.interfaces.DeviceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class DeviceController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     // Create Devicebvgvnhhhhbhhbhhghbbgghghbhb
     @PostMapping
-    public ResponseEntity<DeviceResponseDTO> createDevice(@Valid @RequestBody DeviceRequestDTO dto) {
+    public ResponseEntity<GlopalResponse> createDevice(@Valid @RequestBody DeviceRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(deviceService.createDevice(dto));
     }
@@ -44,7 +45,7 @@ public class DeviceController {
     // Update Device
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceResponseDTO> updateDevice(
+    public ResponseEntity<GlopalResponse> updateDevice(
             @PathVariable UUID id,
             @Valid @RequestBody DeviceRequestDTO dto) {
         return ResponseEntity.ok(deviceService.updateDevice(id, dto));

@@ -1,6 +1,8 @@
 package com.helpdesktech.helpdesk.repository;
 
 import com.helpdesktech.helpdesk.entity.Ticket;
+import com.helpdesktech.helpdesk.enums.Ticket.TicketPriority;
+import com.helpdesktech.helpdesk.enums.Ticket.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +12,7 @@ import java.util.UUID;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     List<Ticket> findByRequesterId(UUID requesterId);
+
+    long countByStatus(TicketStatus ticketStatus);
+    long countByPriority(TicketPriority ticketPriority);
 }

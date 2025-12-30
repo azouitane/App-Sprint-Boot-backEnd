@@ -1,5 +1,6 @@
-package com.helpdesktech.helpdesk.service;
+package com.helpdesktech.helpdesk.service.interfaces;
 
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.dto.user.UpdateUserDTO;
 import com.helpdesktech.helpdesk.dto.user.UserRequestDTO;
 import com.helpdesktech.helpdesk.dto.user.UserResponseDTO;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 public interface UserService {
     // Create User One
-    UserResponseDTO createUserOne(UserRequestDTO userRequestDTO);
+     GlopalResponse createUserOne(UserRequestDTO userRequestDTO);
 
     // Get All Users
     List<UserResponseDTO> getAllUsers();
@@ -18,6 +19,6 @@ public interface UserService {
     UserResponseDTO getUserById(UUID id);
 
     // Update User One
-    UserResponseDTO updateUser(UUID id, UpdateUserDTO  updateUserDTO);
+    GlopalResponse updateUser(UUID id, UpdateUserDTO  updateUserDTO);
 }
 

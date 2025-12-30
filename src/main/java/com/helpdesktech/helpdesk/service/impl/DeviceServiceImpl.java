@@ -2,6 +2,7 @@ package com.helpdesktech.helpdesk.service.impl;
 
 import com.helpdesktech.helpdesk.dto.device.DeviceRequestDTO;
 import com.helpdesktech.helpdesk.dto.device.DeviceResponseDTO;
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.entity.Device;
 import com.helpdesktech.helpdesk.entity.User;
 import com.helpdesktech.helpdesk.enums.Device.DeviceStatus;
@@ -11,7 +12,7 @@ import com.helpdesktech.helpdesk.exception.ResourceNotFoundException;
 import com.helpdesktech.helpdesk.mapper.DeviceMapper;
 import com.helpdesktech.helpdesk.repository.DeviceRepository;
 import com.helpdesktech.helpdesk.repository.UserRepository;
-import com.helpdesktech.helpdesk.service.DeviceService;
+import com.helpdesktech.helpdesk.service.interfaces.DeviceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class DeviceServiceImpl implements DeviceService {
     private final DeviceMapper deviceMapper;
 
     @Override
-    public DeviceResponseDTO createDevice(DeviceRequestDTO deviceRequestDTO) {
+    public GlopalResponse createDevice(DeviceRequestDTO deviceRequestDTO) {
         User user = userRepository.findById(deviceRequestDTO.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + deviceRequestDTO.userId()));
 
@@ -42,7 +43,9 @@ public class DeviceServiceImpl implements DeviceService {
 
         Device savedDevice = deviceRepository.save(device);
 
-        return deviceMapper.toDto(savedDevice);
+        deviceMapper.toDto(savedDevice);
+
+        return new GlopalResponse("Device created successfully");
     }
 
 
@@ -62,7 +65,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceResponseDTO updateDevice(UUID id, DeviceRequestDTO deviceRequestDTO) {
+    public GlopalResponse updateDevice(UUID id, DeviceRequestDTO deviceRequestDTO) {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new DeviceNotFoundException("Device not found: " + id));
 
@@ -81,7 +84,9 @@ public class DeviceServiceImpl implements DeviceService {
             device.setUser(user);
         }
 
-        return deviceMapper.toDto(deviceRepository.save(device));
+        deviceMapper.toDto(deviceRepository.save(device));
+
+        return  new GlopalResponse("Device successfully updated");
     }
 
     @Override

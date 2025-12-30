@@ -1,4 +1,4 @@
-package com.helpdesktech.helpdesk.service;
+package com.helpdesktech.helpdesk.service.interfaces;
 
 import com.helpdesktech.helpdesk.dto.auth.LoginRequestDTO;
 

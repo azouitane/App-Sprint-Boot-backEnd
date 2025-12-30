@@ -1,0 +1,4 @@
+GET /api/users HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MjBmYTBiOS1mMGExLTRhNzItOGJkOC1lMDAyOTI2MzM3NjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjcwMzU1NzIsImV4cCI6MTc2NzEyMTk3Mn0.Ha83rmXKDhc9epQCc_1zyqx8DCyuCX1UgXLDO4GPcbU
+Content-Type: application/json
+Host: 127.0.0.1:8080

@@ -1,12 +1,12 @@
 package com.helpdesktech.helpdesk.controller;
 
+import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
 import com.helpdesktech.helpdesk.dto.user.UpdateUserDTO;
 import com.helpdesktech.helpdesk.dto.user.UserRequestDTO;
 import com.helpdesktech.helpdesk.dto.user.UserResponseDTO;
-import com.helpdesktech.helpdesk.service.UserService;
+import com.helpdesktech.helpdesk.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +21,12 @@ public class UserController {
 
     private final UserService userService;
 
+
+
     // Create User One Controller by Admin
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<GlopalResponse> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUserOne(userRequestDTO));
     }
@@ -46,7 +48,7 @@ public class UserController {
     // Update User by Admin et Technician
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(
+    public ResponseEntity<GlopalResponse> updateUser(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserDTO updateUserDTO) {
         return ResponseEntity.ok(userService.updateUser(id, updateUserDTO));
