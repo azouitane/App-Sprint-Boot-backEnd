@@ -2,6 +2,7 @@ package com.helpdesktech.helpdesk.service.impl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,15 @@ import java.util.UUID;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY =
-            "THIS_IS_A_256_BIT_SECRET_KEY_CHANGE_IT_NOW_123456";
+    // Environment production
+    // jwt.secret=${JWT_SECRET}
+    // jwt.expiration=${JWT_EXPIRATION}
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
+
+    @Value("${jwt.expiration}")
+    private long EXPIRATION_TIME;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
