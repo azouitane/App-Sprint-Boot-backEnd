@@ -1,27 +1,27 @@
 package com.helpdesktech.helpdesk.dto.dashboard;
 
 public record DashboardDevicesDTO(
-        long TotalDevices,
-        DevicesByStatusDTO DevicesByStatus,
-        DevicesByTypeDTO DevicesByType
+        long totalDevices,
+        DevicesByStatusDTO devicesByStatus,
+        DevicesByTypeDTO devicesByType
 ) {
 
     public record DevicesByStatusDTO(
-            long Available,
-            long In_Use,
-            long Maintenance,
-            long Retired
+            long available,
+            long inUse,
+            long maintenance,
+            long retired
     ) {}
 
     public record DevicesByTypeDTO(
-            long Laptop,
-            long Desktop,
-            long Phone,
-            long Tablet,
-            long Server,
-            long SwitchDevice,
-            long Printer,
-            long AccessPoint,
-            long Other
+            long laptop,
+            long desktop,
+            long phone,
+            long tablet,
+            long server,
+            long switchDevice,
+            long printer,
+            long accessPoint,
+            long other
     ) {}
 }

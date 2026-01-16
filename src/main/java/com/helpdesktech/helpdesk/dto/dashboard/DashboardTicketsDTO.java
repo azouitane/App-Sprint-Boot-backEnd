@@ -1,23 +1,22 @@
 package com.helpdesktech.helpdesk.dto.dashboard;
 
 public record DashboardTicketsDTO(
-        long TotalTickets,
-        TicketPriorityDTO TicketPriority,   // LOW, MEDIUM, HIGH, CRITICAL
-        TicketStatusDTO TicketStatus        // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+        long totalTickets,
+        TicketPriorityDTO ticketPriority,
+        TicketStatusDTO ticketStatus
 ) {
 
     public record TicketPriorityDTO(
-            long Low,
-            long Medium,
-            long High,
-            long Critical
-    ){}
+            long low,
+            long medium,
+            long high,
+            long critical
+    ) {}
 
     public record TicketStatusDTO(
-            long Open,
-            long In_Progress,
-            long Repogress,
-            long Closed
-    ){}
+            long open,
+            long inProgress,
+            long reopened,
+            long closed
+    ) {}
 }
-

@@ -1,6 +1,6 @@
 package com.helpdesktech.helpdesk.service.impl;
-
 import com.helpdesktech.helpdesk.dto.glopal.GlopalResponse;
+import com.helpdesktech.helpdesk.dto.ticket.MyTickets;
 import com.helpdesktech.helpdesk.dto.ticket.TicketRequestDTO;
 import com.helpdesktech.helpdesk.dto.ticket.TicketResponseDTO;
 import com.helpdesktech.helpdesk.dto.ticket.UpdateTicketDTO;
@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -81,4 +83,41 @@ public class TicketServiceImpl implements TicketService {
 
         return new  GlopalResponse("Ticket updated successfully");
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MyTickets> getTicketsByRequesterId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UUID requesterId = UUID.fromString(auth.getName());
+
+        return ticketRepository.findByRequesterId(requesterId)
+                .stream()
+                .map(ticket -> new MyTickets(
+                        ticket.getId(),
+                        ticket.getTitle(),
+                        ticket.getDescription(),
+                        ticket.getStatus(),
+                        ticket.getPriority(),
+                        ticket.getCategory(),
+                        ticket.getCreatedAt(),
+                        ticket.getUpdatedAt(),
+                        ticket.getDevice() != null
+                                ? new MyTickets.DeviceID(
+                                ticket.getDevice().getId(),
+                                ticket.getDevice().getName(),
+                                ticket.getDevice().getModel(),
+                                ticket.getDevice().getManufacturer(),
+                                ticket.getDevice().getType(),
+                                ticket.getDevice().getSerialNumber(),
+                                ticket.getDevice().getStatus(),
+                                ticket.getDevice().getPurchaseDate(),
+                                ticket.getDevice().getWarrantyExpiry(),
+                                ticket.getDevice().getSpecifications()
+                        )
+                                : null
+                ))
+                .toList();
+    }
+
+
 }

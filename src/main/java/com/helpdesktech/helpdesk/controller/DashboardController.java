@@ -28,6 +28,7 @@ public class DashboardController {
     public ResponseEntity<DashboardTicketsDTO> getDashboardTickets() {
         return ResponseEntity.ok(dashboardService.getDashboardTickets());
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     @GetMapping("devices")
     public ResponseEntity<DashboardDevicesDTO> getDashboardDevices() {

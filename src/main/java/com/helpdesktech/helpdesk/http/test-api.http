@@ -1,4 +1,4 @@
-GET /api/users HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MjBmYTBiOS1mMGExLTRhNzItOGJkOC1lMDAyOTI2MzM3NjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjcwMzU1NzIsImV4cCI6MTc2NzEyMTk3Mn0.Ha83rmXKDhc9epQCc_1zyqx8DCyuCX1UgXLDO4GPcbU
-Content-Type: application/json
+GET /api/tickets/my HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MjBmYTBiOS1mMGExLTRhNzItOGJkOC1lMDAyOTI2MzM3NjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjcxMzc1NDMsImV4cCI6MTc2NzIyMzk0M30.y9ODS3p0HNHJxT3WZ88-snzb3jLlFUZ5iEWk3_drxD0
 Host: 127.0.0.1:8080
+

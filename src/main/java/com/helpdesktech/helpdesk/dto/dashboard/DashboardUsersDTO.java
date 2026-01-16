@@ -1,20 +1,20 @@
 package com.helpdesktech.helpdesk.dto.dashboard;
 
 public record DashboardUsersDTO(
-        long TotalUsers,
-        UserByRoleDTO UserByRole,
-        UserStatusDTO UserStatus
+        long totalUsers,
+        UserByRoleDTO userByRole,
+        UserStatusDTO userStatus
 ) {
 
     public record UserByRoleDTO(
-            long Admins,
-            long Aechnicians,
-            long Users
+            long admins,
+            long technicians,
+            long users
     ) {}
 
     public record UserStatusDTO(
-            long Active,
-            long Inactive,
-            long Suspened
+            long active,
+            long inactive,
+            long suspended
     ) {}
 }

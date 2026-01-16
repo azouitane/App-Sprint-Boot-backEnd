@@ -20,9 +20,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-
-
-
     // Create User One Controller by Admin
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping

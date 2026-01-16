@@ -40,6 +40,7 @@ public class SecurityConfig {
 
                         // Tickets endpoints
                         .requestMatchers(HttpMethod.POST, "/api/tickets/**").hasAnyRole("ADMIN","TECHNICIAN","USER")
+                        .requestMatchers(HttpMethod.GET, "/api/tickets/my/**").hasAnyRole("ADMIN","TECHNICIAN","USER")
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "TECHNICIAN")
 
                         // Any other request
